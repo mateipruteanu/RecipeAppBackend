@@ -1,7 +1,10 @@
 package com.mateipruteanu.recipeapp.controllers;
 
+import com.mateipruteanu.recipeapp.models.Ingredient;
+import com.mateipruteanu.recipeapp.models.RecipeIngredient;
 import com.mateipruteanu.recipeapp.models.User;
 import com.mateipruteanu.recipeapp.models.Recipe;
+import com.mateipruteanu.recipeapp.repositories.IngredientRepository;
 import com.mateipruteanu.recipeapp.repositories.RecipeRepository;
 import com.mateipruteanu.recipeapp.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,8 @@ public class RecipeController {
     private RecipeRepository recipeRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private IngredientRepository ingredientRepository;
 
     @GetMapping("/recipes")
     public List<Recipe> getAllRecipes() {
@@ -31,9 +36,24 @@ public class RecipeController {
 
     @PostMapping("/recipes")
     public String addRecipe(@RequestBody Recipe recipe) {
+        for (RecipeIngredient recipeIngredient : recipe.getRecipeIngredients()) {
+            Ingredient ingredient = recipeIngredient.getIngredient();
+            if(ingredientRepository.findByName(ingredient.getName()) != null) {
+                ingredient = ingredientRepository.findByName(ingredient.getName());
+                recipeIngredient.setIngredient(ingredient);
+            }
+            else {
+                Ingredient savedIngredient = ingredientRepository.save(ingredient);
+                recipeIngredient.setIngredient(savedIngredient);
+            }
+            recipeIngredient.setRecipe(recipe);
+        }
+
         recipeRepository.save(recipe);
         return "Saved";
     }
+
+
 
     @PutMapping("/recipes/{id}")
     public String updateRecipe(@PathVariable long id, @RequestBody Recipe recipe) {
@@ -64,4 +84,5 @@ public class RecipeController {
         }
         return "Recipe not found";
     }
+
 }

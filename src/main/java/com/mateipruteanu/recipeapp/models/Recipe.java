@@ -1,6 +1,12 @@
 package com.mateipruteanu.recipeapp.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Entity
 public class Recipe {
@@ -14,6 +20,10 @@ public class Recipe {
     @Column
     private String instructions;
 
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("recipe")
+    private List<RecipeIngredient> recipeIngredients = new ArrayList<>();
+
     public Recipe() {
         name = "";
         description = "";
@@ -24,6 +34,14 @@ public class Recipe {
         this.setName(name);
         this.setDescription(description);
         this.setInstructions(instructions);
+    }
+
+    public List<RecipeIngredient> getRecipeIngredients() {
+        return recipeIngredients;
+    }
+
+    public void setRecipeIngredients(List<RecipeIngredient> recipeIngredients) {
+        this.recipeIngredients = recipeIngredients;
     }
 
     public long getId() {

@@ -1,9 +1,12 @@
 package com.mateipruteanu.recipeapp.controllers;
 
+import com.mateipruteanu.recipeapp.models.Ingredient;
+import com.mateipruteanu.recipeapp.models.RecipeIngredient;
 import com.mateipruteanu.recipeapp.models.User;
 import com.mateipruteanu.recipeapp.models.Recipe;
 import com.mateipruteanu.recipeapp.repositories.RecipeRepository;
 import com.mateipruteanu.recipeapp.repositories.UserRepository;
+import com.mateipruteanu.recipeapp.repositories.IngredientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +19,10 @@ import java.util.Optional;
 public class UserController {
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private RecipeRepository recipeRepository;
+    @Autowired
+    private IngredientRepository ingredientRepository;
 
     @GetMapping("/users")
     public List<User> getUsers() {
@@ -100,6 +104,18 @@ public class UserController {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
+            for (RecipeIngredient recipeIngredient : recipe.getRecipeIngredients()) {
+                Ingredient ingredient = recipeIngredient.getIngredient();
+                if(ingredientRepository.findByName(ingredient.getName()) != null) {
+                    ingredient = ingredientRepository.findByName(ingredient.getName());
+                }
+                else {
+                    ingredient = ingredientRepository.save(ingredient);
+                }
+                recipeIngredient.setIngredient(ingredient);
+                recipeIngredient.setRecipe(recipe);
+            }
+
             recipeRepository.save(recipe);
             user.getAddedRecipes().add(recipe);
             userRepository.save(user);
@@ -107,6 +123,7 @@ public class UserController {
         }
         return "User not found";
     }
+
 
     @DeleteMapping("/users/{userId}/recipes/{recipeId}")
     public String removeRecipeFromUser(@PathVariable long userId, @PathVariable long recipeId) {

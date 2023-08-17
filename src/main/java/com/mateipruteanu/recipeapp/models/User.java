@@ -25,9 +25,24 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "recipe_id"))
     private List<Recipe> addedRecipes = new ArrayList<>();
 
+    @OneToMany
+    @JoinTable(
+            name = "user_favorite_recipes",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "recipe_id"))
+    private List<Recipe> favoriteRecipes = new ArrayList<>();
+
     public User() {
         username = "";
         password = "";
+    }
+
+    public List<Recipe> getFavoriteRecipes() {
+        return favoriteRecipes;
+    }
+
+    public void setFavoriteRecipes(List<Recipe> favoriteRecipes) {
+        this.favoriteRecipes = favoriteRecipes;
     }
 
     public List<Recipe> getAddedRecipes() {

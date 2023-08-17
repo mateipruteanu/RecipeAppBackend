@@ -29,6 +29,8 @@ public class UserController {
         return userRepository.findAll();
     }
 
+
+    // CRUD operations for users
     @GetMapping("/users/{id}")
     public User getUser(@PathVariable long id) {
         if(userRepository.findById(id).isPresent()) {
@@ -68,6 +70,7 @@ public class UserController {
     }
 
 
+    //User added recipes list
     @GetMapping("/users/{userId}/recipes")
     public List<Recipe> getUserAddedRecipes(@PathVariable long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
@@ -96,7 +99,6 @@ public class UserController {
         }
         return ResponseEntity.notFound().build();
     }
-
 
 
     @PostMapping("/users/{userId}/recipes")
@@ -139,5 +141,63 @@ public class UserController {
     }
 
 
+    //Favorites List
+    @GetMapping("/users/{userId}/favorites")
+    public ResponseEntity<List<Recipe>> getUserFavoriteRecipes(@PathVariable long userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            return ResponseEntity.ok(user.getFavoriteRecipes());
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/users/{userId}/favorites/{recipeId}")
+    public ResponseEntity<Recipe> getUserFavoriteRecipe(@PathVariable long userId, @PathVariable long recipeId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            List<Recipe> favoriteRecipes = user.getFavoriteRecipes();
+
+            Optional<Recipe> optionalRecipe;
+            for(Recipe recipe : favoriteRecipes) {
+                if(recipe.getId() == recipeId) {
+                    optionalRecipe = Optional.of(recipe);
+                    Recipe recipe1 = optionalRecipe.get();
+                    return ResponseEntity.ok(recipe1);
+                }
+            }
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/users/{userId}/favorites")
+    public ResponseEntity<String> addRecipeToFavorites(@PathVariable long userId, @RequestBody Recipe recipe) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            Optional<Recipe> optionalRecipe = recipeRepository.findById(recipe.getId());
+            if(optionalRecipe.isPresent()) {
+                Recipe recipe1 = optionalRecipe.get();
+                user.getFavoriteRecipes().add(recipe1);
+                userRepository.save(user);
+                return ResponseEntity.ok("Recipe added to favorites list for user " + user.getUsername());
+            }
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/users/{userId}/favorites/{recipeId}")
+    public String removeRecipeFromFavorites(@PathVariable long userId, @PathVariable long recipeId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            List<Recipe> favoriteRecipes = user.getFavoriteRecipes();
+            favoriteRecipes.removeIf(recipe -> recipe.getId() == recipeId);
+            userRepository.save(user);
+            return "Recipe removed from favorites list for user" + user.getUsername();
+        }
+        return "User not found";
+    }
 
 }

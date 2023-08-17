@@ -8,6 +8,7 @@ import com.mateipruteanu.recipeapp.repositories.IngredientRepository;
 import com.mateipruteanu.recipeapp.repositories.RecipeRepository;
 import com.mateipruteanu.recipeapp.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,42 +23,42 @@ public class IngredientController {
     private IngredientRepository ingredientRepository;
 
     @GetMapping("/ingredients")
-    public List<Ingredient> getAllIngredients() {
-        return ingredientRepository.findAll();
+    public ResponseEntity<List<Ingredient>> getAllIngredients() {
+        return ResponseEntity.ok(ingredientRepository.findAll());
     }
 
     @GetMapping("/ingredients/{id}")
-    public Ingredient getIngredient(@PathVariable long id) {
+    public ResponseEntity<Ingredient> getIngredient(@PathVariable long id) {
         if(ingredientRepository.findById(id).isPresent()) {
-            return ingredientRepository.findById(id).get();
+            return ResponseEntity.ok(ingredientRepository.findById(id).get());
         }
-        return new Ingredient();
+        return ResponseEntity.notFound().build();
     }
 
     @PostMapping("/ingredients")
-    public String addIngredient(@RequestBody Ingredient ingredient) {
+    public ResponseEntity<String> addIngredient(@RequestBody Ingredient ingredient) {
         ingredientRepository.save(ingredient);
-        return "Saved";
+        return ResponseEntity.ok("Saved ingredient " + ingredient.getName());
     }
 
     @PutMapping("/ingredients/{id}")
-    public String updateIngredient(@PathVariable long id, @RequestBody Ingredient ingredient) {
+    public ResponseEntity<String> updateIngredient(@PathVariable long id, @RequestBody Ingredient ingredient) {
         if(ingredientRepository.findById(id).isPresent()) {
             Ingredient existingIngredient = ingredientRepository.findById(id).get();
             existingIngredient.setName(ingredient.getName());
             ingredientRepository.save(existingIngredient);
-            return "Updated";
+            return ResponseEntity.ok("Updated ingredient " + existingIngredient.getName());
         }
-        return "Ingredient not found";
+        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/ingredients/{id}")
-    public String deleteIngredient(@PathVariable long id) {
+    public ResponseEntity<String> deleteIngredient(@PathVariable long id) {
         if(ingredientRepository.findById(id).isPresent()) {
             ingredientRepository.deleteById(id);
-            return "Deleted";
+            return ResponseEntity.ok("Deleted ingredient");
         }
-        return "Ingredient not found";
+        return ResponseEntity.notFound().build();
     }
 
 }

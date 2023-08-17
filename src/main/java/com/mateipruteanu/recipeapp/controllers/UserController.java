@@ -32,53 +32,53 @@ public class UserController {
 
     // CRUD operations for users
     @GetMapping("/users/{id}")
-    public User getUser(@PathVariable long id) {
+    public ResponseEntity<User> getUser(@PathVariable long id) {
         if(userRepository.findById(id).isPresent()) {
-            return userRepository.findById(id).get();
+            return ResponseEntity.ok(userRepository.findById(id).get());
         }
-        return new User();
+        return ResponseEntity.notFound().build();
     }
 
     @PostMapping("/users")
-    public String saveUser(@RequestBody User user) {
+    public ResponseEntity<String> saveUser(@RequestBody User user) {
         if(userRepository.findByUsername(user.getUsername()) != null) {
-            return "Username already exists";
+            return ResponseEntity.status(409).body("Username already exists");
         }
         userRepository.save(user);
-        return "Saved";
+        return ResponseEntity.ok("Saved");
     }
 
     @PutMapping("users/{id}")
-    public String updateUser(@PathVariable long id, @RequestBody User user) {
+    public ResponseEntity<String> updateUser(@PathVariable long id, @RequestBody User user) {
         if(userRepository.findById(id).isPresent()) {
             User existingUser = userRepository.findById(id).get();
             existingUser.setUsername(user.getUsername());
             existingUser.setPassword(user.getPassword());
             userRepository.save(existingUser);
-            return "Updated";
+            return ResponseEntity.ok("Updated");
         }
-        return "User not found";
+        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("users/{id}")
-    public String deleteUser(@PathVariable long id) {
+    public ResponseEntity<String> deleteUser(@PathVariable long id) {
         if(userRepository.findById(id).isPresent()) {
             userRepository.deleteById(id);
-            return "Deleted";
+            return ResponseEntity.ok("Deleted user with id " + id);
         }
-        return "User not found";
+        return ResponseEntity.notFound().build();
     }
 
 
     //User added recipes list
     @GetMapping("/users/{userId}/recipes")
-    public List<Recipe> getUserAddedRecipes(@PathVariable long userId) {
+    public ResponseEntity<List<Recipe>> getUserAddedRecipes(@PathVariable long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            return user.getAddedRecipes();
+            return ResponseEntity.ok(user.getAddedRecipes());
         }
-        return Collections.emptyList();
+        return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/users/{userId}/recipes/{recipeId}")
@@ -102,7 +102,7 @@ public class UserController {
 
 
     @PostMapping("/users/{userId}/recipes")
-    public String addRecipeToUser(@PathVariable long userId, @RequestBody Recipe recipe) {
+    public ResponseEntity<String> addRecipeToUser(@PathVariable long userId, @RequestBody Recipe recipe) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
@@ -121,23 +121,23 @@ public class UserController {
             recipeRepository.save(recipe);
             user.getAddedRecipes().add(recipe);
             userRepository.save(user);
-            return "Recipe added to users list";
+            return ResponseEntity.ok("Recipe added to users list");
         }
-        return "User not found";
+        return ResponseEntity.notFound().build();
     }
 
 
     @DeleteMapping("/users/{userId}/recipes/{recipeId}")
-    public String removeRecipeFromUser(@PathVariable long userId, @PathVariable long recipeId) {
+    public ResponseEntity<String> removeRecipeFromUser(@PathVariable long userId, @PathVariable long recipeId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             List<Recipe> addedRecipes = user.getAddedRecipes();
             addedRecipes.removeIf(recipe -> recipe.getId() == recipeId);
             userRepository.save(user);
-            return "Recipe removed from users list";
+            return ResponseEntity.ok("Recipe removed from users list");
         }
-        return "User not found";
+        return ResponseEntity.notFound().build();
     }
 
 
@@ -188,16 +188,16 @@ public class UserController {
     }
 
     @DeleteMapping("/users/{userId}/favorites/{recipeId}")
-    public String removeRecipeFromFavorites(@PathVariable long userId, @PathVariable long recipeId) {
+    public ResponseEntity<String> removeRecipeFromFavorites(@PathVariable long userId, @PathVariable long recipeId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             List<Recipe> favoriteRecipes = user.getFavoriteRecipes();
             favoriteRecipes.removeIf(recipe -> recipe.getId() == recipeId);
             userRepository.save(user);
-            return "Recipe removed from favorites list for user" + user.getUsername();
+            return ResponseEntity.ok("Recipe removed from favorites list for user" + user.getUsername());
         }
-        return "User not found";
+        return ResponseEntity.notFound().build();
     }
 
 }

@@ -7,6 +7,7 @@ import com.mateipruteanu.recipeapp.repositories.IngredientRepository;
 import com.mateipruteanu.recipeapp.repositories.RecipeRepository;
 import com.mateipruteanu.recipeapp.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,18 +22,18 @@ public class RecipeIngredientController {
     private IngredientRepository ingredientRepository;
 
     @PutMapping("/recipes/{recipeId}/ingredients/{ingredientId}")
-    public String addIngredientToRecipe(@PathVariable long recipeId, @PathVariable long ingredientId, @RequestBody String quantity) {
+    public ResponseEntity<String> addIngredientToRecipe(@PathVariable long recipeId, @PathVariable long ingredientId, @RequestBody String quantity) {
         if(recipeRepository.findById(recipeId).isPresent() && ingredientRepository.findById(ingredientId).isPresent()) {
             Recipe recipe = recipeRepository.findById(recipeId).get();
             recipe.getRecipeIngredients().add(new RecipeIngredient(recipe, ingredientRepository.findById(ingredientId).get(), quantity));
             recipeRepository.save(recipe);
-            return "Added";
+            return ResponseEntity.ok("Added ingredient");
         }
-        return "Recipe not found";
+        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/recipes/{recipeId}/ingredients/{ingredientId}")
-    public String deleteIngredientFromRecipe(@PathVariable long recipeId, @PathVariable long ingredientId) {
+    public ResponseEntity<String> deleteIngredientFromRecipe(@PathVariable long recipeId, @PathVariable long ingredientId) {
         if(recipeRepository.findById(recipeId).isPresent() && ingredientRepository.findById(ingredientId).isPresent()) {
             Recipe recipe = recipeRepository.findById(recipeId).get();
             List<RecipeIngredient> recipeIngredients = recipe.getRecipeIngredients();
@@ -40,11 +41,11 @@ public class RecipeIngredientController {
                 if(recipeIngredient.getIngredient().getId() == ingredientId) {
                     recipeIngredients.remove(recipeIngredient);
                     recipeRepository.save(recipe);
-                    return "Deleted";
+                    return ResponseEntity.ok("Deleted ingredient");
                 }
             }
-            return "Ingredient not found";
+            return ResponseEntity.status(404).body("Ingredient not found");
         }
-        return "Recipe not found";
+        return ResponseEntity.status(404).body("Recipe or ingredient not found");
     }
 }

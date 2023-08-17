@@ -8,6 +8,7 @@ import com.mateipruteanu.recipeapp.repositories.IngredientRepository;
 import com.mateipruteanu.recipeapp.repositories.RecipeRepository;
 import com.mateipruteanu.recipeapp.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,15 +28,15 @@ public class RecipeController {
     }
 
     @GetMapping("/recipes/{id}")
-    public Recipe getRecipe(@PathVariable long id) {
+    public ResponseEntity<Recipe> getRecipe(@PathVariable long id) {
         if(recipeRepository.findById(id).isPresent()) {
-            return recipeRepository.findById(id).get();
+            return ResponseEntity.ok(recipeRepository.findById(id).get());
         }
-        return new Recipe();
+        return ResponseEntity.notFound().build();
     }
 
     @PostMapping("/recipes")
-    public String addRecipe(@RequestBody Recipe recipe) {
+    public ResponseEntity<String> addRecipe(@RequestBody Recipe recipe) {
         for (RecipeIngredient recipeIngredient : recipe.getRecipeIngredients()) {
             Ingredient ingredient = recipeIngredient.getIngredient();
             if(ingredientRepository.findByName(ingredient.getName()) != null) {
@@ -50,26 +51,26 @@ public class RecipeController {
         }
 
         recipeRepository.save(recipe);
-        return "Saved";
+        return ResponseEntity.ok("Saved recipe " + recipe.getName());
     }
 
 
 
     @PutMapping("/recipes/{id}")
-    public String updateRecipe(@PathVariable long id, @RequestBody Recipe recipe) {
+    public ResponseEntity<String> updateRecipe(@PathVariable long id, @RequestBody Recipe recipe) {
         if(recipeRepository.findById(id).isPresent()) {
             Recipe existingRecipe = recipeRepository.findById(id).get();
             existingRecipe.setName(recipe.getName());
             existingRecipe.setDescription(recipe.getDescription());
             existingRecipe.setInstructions(recipe.getInstructions());
             recipeRepository.save(existingRecipe);
-            return "Updated";
+            return ResponseEntity.ok("Updated");
         }
-        return "Recipe not found";
+        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/recipes/{id}")
-    public String deleteRecipe(@PathVariable long id) {
+    public ResponseEntity<String> deleteRecipe(@PathVariable long id) {
         if(recipeRepository.findById(id).isPresent()) {
             Recipe recipe = recipeRepository.findById(id).get();
             List<User> users = userRepository.findAll();
@@ -80,9 +81,9 @@ public class RecipeController {
                 }
             }
             recipeRepository.deleteById(id);
-            return "Deleted";
+            return ResponseEntity.ok("Deleted");
         }
-        return "Recipe not found";
+        return ResponseEntity.notFound().build();
     }
 
 }

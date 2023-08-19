@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class ApiController {
-    @GetMapping("/")
+    @GetMapping("/api")
     public String getInfo() {
         return "Restful API for a recipe app";
     }

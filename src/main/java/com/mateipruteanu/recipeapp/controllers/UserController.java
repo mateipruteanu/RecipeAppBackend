@@ -1,21 +1,21 @@
 package com.mateipruteanu.recipeapp.controllers;
 
 import com.mateipruteanu.recipeapp.models.Ingredient;
+import com.mateipruteanu.recipeapp.models.Recipe;
 import com.mateipruteanu.recipeapp.models.RecipeIngredient;
 import com.mateipruteanu.recipeapp.models.User;
-import com.mateipruteanu.recipeapp.models.Recipe;
+import com.mateipruteanu.recipeapp.repositories.IngredientRepository;
 import com.mateipruteanu.recipeapp.repositories.RecipeRepository;
 import com.mateipruteanu.recipeapp.repositories.UserRepository;
-import com.mateipruteanu.recipeapp.repositories.IngredientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
+@RequestMapping("/api/users")
 public class UserController {
     @Autowired
     private UserRepository userRepository;
@@ -24,14 +24,14 @@ public class UserController {
     @Autowired
     private IngredientRepository ingredientRepository;
 
-    @GetMapping("/users")
+    @GetMapping("/")
     public List<User> getUsers() {
         return userRepository.findAll();
     }
 
 
     // CRUD operations for users
-    @GetMapping("/users/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<User> getUser(@PathVariable long id) {
         if(userRepository.findById(id).isPresent()) {
             return ResponseEntity.ok(userRepository.findById(id).get());
@@ -39,16 +39,16 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/users")
+    @PostMapping("/")
     public ResponseEntity<String> saveUser(@RequestBody User user) {
-        if(userRepository.findByUsername(user.getUsername()) != null) {
+        if(userRepository.findByUsername(user.getUsername()).isPresent()) {
             return ResponseEntity.status(409).body("Username already exists");
         }
         userRepository.save(user);
         return ResponseEntity.ok("Saved");
     }
 
-    @PutMapping("users/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<String> updateUser(@PathVariable long id, @RequestBody User user) {
         if(userRepository.findById(id).isPresent()) {
             User existingUser = userRepository.findById(id).get();
@@ -60,7 +60,7 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("users/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable long id) {
         if(userRepository.findById(id).isPresent()) {
             userRepository.deleteById(id);
@@ -71,7 +71,7 @@ public class UserController {
 
 
     //User added recipes list
-    @GetMapping("/users/{userId}/recipes")
+    @GetMapping("/{userId}/recipes")
     public ResponseEntity<List<Recipe>> getUserAddedRecipes(@PathVariable long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
@@ -81,7 +81,7 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/users/{userId}/recipes/{recipeId}")
+    @GetMapping("/{userId}/recipes/{recipeId}")
     public ResponseEntity<Recipe> getUserAddedRecipe(@PathVariable long userId, @PathVariable long recipeId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
@@ -101,7 +101,7 @@ public class UserController {
     }
 
 
-    @PostMapping("/users/{userId}/recipes")
+    @PostMapping("/{userId}/recipes")
     public ResponseEntity<String> addRecipeToUser(@PathVariable long userId, @RequestBody Recipe recipe) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
@@ -127,7 +127,7 @@ public class UserController {
     }
 
 
-    @DeleteMapping("/users/{userId}/recipes/{recipeId}")
+    @DeleteMapping("/{userId}/recipes/{recipeId}")
     public ResponseEntity<String> removeRecipeFromUser(@PathVariable long userId, @PathVariable long recipeId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
@@ -142,7 +142,7 @@ public class UserController {
 
 
     //Favorites List
-    @GetMapping("/users/{userId}/favorites")
+    @GetMapping("/{userId}/favorites")
     public ResponseEntity<List<Recipe>> getUserFavoriteRecipes(@PathVariable long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
@@ -152,7 +152,7 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/users/{userId}/favorites/{recipeId}")
+    @GetMapping("/{userId}/favorites/{recipeId}")
     public ResponseEntity<Recipe> getUserFavoriteRecipe(@PathVariable long userId, @PathVariable long recipeId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
@@ -171,7 +171,7 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/users/{userId}/favorites")
+    @PostMapping("/{userId}/favorites")
     public ResponseEntity<String> addRecipeToFavorites(@PathVariable long userId, @RequestBody Recipe recipe) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
@@ -187,7 +187,7 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/users/{userId}/favorites/{recipeId}")
+    @DeleteMapping("/{userId}/favorites/{recipeId}")
     public ResponseEntity<String> removeRecipeFromFavorites(@PathVariable long userId, @PathVariable long recipeId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {

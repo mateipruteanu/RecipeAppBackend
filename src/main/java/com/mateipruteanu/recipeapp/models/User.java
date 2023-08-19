@@ -1,6 +1,7 @@
 package com.mateipruteanu.recipeapp.models;
 
 import jakarta.persistence.*;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,7 +10,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+
 @Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@Builder
 public class User implements UserDetails {
 
     @Id
@@ -25,6 +31,7 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "recipe_id"))
     private List<Recipe> addedRecipes = new ArrayList<>();
+
     @OneToMany
     @JoinTable(
             name = "user_favorite_recipes",
@@ -62,46 +69,6 @@ public class User implements UserDetails {
     }
 
 
-//    Getters and Setters
-    public List<Recipe> getFavoriteRecipes() {
-        return favoriteRecipes;
-    }
-
-    public void setFavoriteRecipes(List<Recipe> favoriteRecipes) {
-        this.favoriteRecipes = favoriteRecipes;
-    }
-
-    public List<Recipe> getAddedRecipes() {
-        return addedRecipes;
-    }
-
-    public void setAddedRecipes(List<Recipe> addedRecipes) {
-        this.addedRecipes = addedRecipes;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
 //    User Details specific functions
     @Override

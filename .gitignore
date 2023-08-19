@@ -7,7 +7,7 @@ target/
 #dotenv
 .env
 .env.test
-secret.env
+.env
 
 ### STS ###
 .apt_generated

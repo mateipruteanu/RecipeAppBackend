@@ -4,6 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+#dotenv
+.env
+.env.test
+
 ### STS ###
 .apt_generated
 .classpath

@@ -3,6 +3,7 @@ package com.mateipruteanu.recipeapp.config;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,10 +25,25 @@ public class JwtService {
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
+        if(claims == null)
+            return null;
         return claimsResolver.apply(claims);
     }
 
-    private Claims extractAllClaims(String token) {
+    private Claims extractAllClaims(String token) throws MalformedJwtException {
+
+        try {
+            Jwts
+                .parserBuilder()
+                .setSigningKey(getSignInKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        } catch (Exception exception) {
+            System.out.println("JWTService: " + exception);
+            return null;
+        }
+
         return Jwts
                 .parserBuilder()
                 .setSigningKey(getSignInKey())

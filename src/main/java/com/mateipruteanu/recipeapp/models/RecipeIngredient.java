@@ -2,8 +2,14 @@ package com.mateipruteanu.recipeapp.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
+@AllArgsConstructor
 @Table(name = "RECIPE_INGREDIENT")
 public class RecipeIngredient {
 
@@ -32,34 +38,6 @@ public class RecipeIngredient {
     public RecipeIngredient(Recipe recipe, Ingredient ingredient, String quantity) {
         this.recipe = recipe;
         this.ingredient = ingredient;
-        this.quantity = quantity;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public Recipe getRecipe() {
-        return recipe;
-    }
-
-    public void setRecipe(Recipe recipe) {
-        this.recipe = recipe;
-    }
-
-    public Ingredient getIngredient() {
-        return ingredient;
-    }
-
-    public void setIngredient(Ingredient ingredient) {
-        this.ingredient = ingredient;
-    }
-
-    public String getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(String quantity) {
         this.quantity = quantity;
     }
 }

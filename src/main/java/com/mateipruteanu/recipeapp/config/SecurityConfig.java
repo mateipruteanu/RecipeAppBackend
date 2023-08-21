@@ -36,6 +36,8 @@ public class SecurityConfig {
                 .hasAnyRole(USER.name(), ADMIN.name())
             .requestMatchers(HttpMethod.GET,"/api/admin")
                 .hasRole(ADMIN.name())
+            .requestMatchers(HttpMethod.GET,"/api/users/")// get all users
+                .hasRole(ADMIN.name())
             .anyRequest()
                 .authenticated()
             .and()

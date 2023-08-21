@@ -1,10 +1,10 @@
 package com.mateipruteanu.recipeapp.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mateipruteanu.recipeapp.token.Token;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
@@ -31,6 +31,7 @@ public class User implements UserDetails {
             name = "user_added_recipes",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "recipe_id"))
+    @JsonIgnore
     private List<Recipe> addedRecipes = new ArrayList<>();
 
     @OneToMany

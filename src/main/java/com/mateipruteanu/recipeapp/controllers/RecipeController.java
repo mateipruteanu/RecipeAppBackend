@@ -31,6 +31,7 @@ public class RecipeController {
     @GetMapping("/{id}")
     public ResponseEntity<Recipe> getRecipe(@PathVariable long id) {
         if(recipeRepository.findById(id).isPresent()) {
+
             return ResponseEntity.ok(recipeRepository.findById(id).get());
         }
         return ResponseEntity.notFound().build();

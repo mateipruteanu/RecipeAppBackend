@@ -23,14 +23,12 @@ public class ApiController {
     }
 
     @GetMapping("/admin")
-    @PreAuthorize("hasRole('ADMIN')")
+    @Secured("ROLE_ADMIN")
     public String getAdminInfo() {
         return "This is an admin endpoint";
     }
 
-
     @GetMapping("/user")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public String getUserInfo() {
         return "This is a user endpoint";
     }

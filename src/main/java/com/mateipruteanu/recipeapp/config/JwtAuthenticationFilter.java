@@ -1,5 +1,6 @@
 package com.mateipruteanu.recipeapp.config;
 
+import com.mateipruteanu.recipeapp.token.TokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +23,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final TokenRepository tokenRepository;
 
     @Override
     protected void doFilterInternal(
@@ -42,7 +44,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         username = jwtService.extractUsername(jwt);
         if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username); // getting user details from database
-            if(jwtService.isTokenValid(jwt, userDetails)) {
+            boolean isTokenValidInDatabase = tokenRepository.findByToken(jwt)
+                    .map(token -> !token.isExpired() && !token.isRevoked()).orElse(false);
+            if(jwtService.isTokenValid(jwt, userDetails) && isTokenValidInDatabase) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,

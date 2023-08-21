@@ -1,5 +1,6 @@
 package com.mateipruteanu.recipeapp.models;
 
+import com.mateipruteanu.recipeapp.token.Token;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -41,6 +42,9 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
 
 //    Constructors
     public User() {

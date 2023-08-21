@@ -25,7 +25,7 @@
   * :large_blue_circle:Make a UI with React (+ maybe React Native for IOS/Android development)
 <br>
 
-### :green_circle: Update #1
+### :green_circle: Update #1 - Secured app with Spring Security & converted to Lombok
 Users now receive a `JWT` when registering or logging in. All other JWTs associated with the user are invalidated when a new one is generated (for example when they login). They can logout and that causes their JWTs also to be invalidated.
 Users can have the role `User` or the role `Admin`, with different privileges for the Admin.
 Users can only add recipes to their own accounts, since their tokens are checked and must match the id provided in the URL. For example, user with `id=12` will recieve a `403 status code` when trying to `POST` to `/api/users/13/recipes`

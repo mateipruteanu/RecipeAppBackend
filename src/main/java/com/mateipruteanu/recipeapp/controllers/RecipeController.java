@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/recipes")
 public class RecipeController {
     @Autowired
     private RecipeRepository recipeRepository;
@@ -22,20 +23,21 @@ public class RecipeController {
     @Autowired
     private IngredientRepository ingredientRepository;
 
-    @GetMapping("/recipes")
+    @GetMapping("/")
     public List<Recipe> getAllRecipes() {
         return recipeRepository.findAll();
     }
 
-    @GetMapping("/recipes/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Recipe> getRecipe(@PathVariable long id) {
         if(recipeRepository.findById(id).isPresent()) {
+
             return ResponseEntity.ok(recipeRepository.findById(id).get());
         }
         return ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/recipes")
+    @PostMapping("/")
     public ResponseEntity<String> addRecipe(@RequestBody Recipe recipe) {
         for (RecipeIngredient recipeIngredient : recipe.getRecipeIngredients()) {
             Ingredient ingredient = recipeIngredient.getIngredient();
@@ -54,9 +56,7 @@ public class RecipeController {
         return ResponseEntity.ok("Saved recipe " + recipe.getName());
     }
 
-
-
-    @PutMapping("/recipes/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<String> updateRecipe(@PathVariable long id, @RequestBody Recipe recipe) {
         if(recipeRepository.findById(id).isPresent()) {
             Recipe existingRecipe = recipeRepository.findById(id).get();
@@ -69,7 +69,7 @@ public class RecipeController {
         return ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/recipes/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteRecipe(@PathVariable long id) {
         if(recipeRepository.findById(id).isPresent()) {
             Recipe recipe = recipeRepository.findById(id).get();

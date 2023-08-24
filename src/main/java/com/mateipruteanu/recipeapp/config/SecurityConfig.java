@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 import static com.mateipruteanu.recipeapp.models.Role.ADMIN;
 import static com.mateipruteanu.recipeapp.models.Role.USER;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
@@ -26,9 +27,11 @@ public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        http.cors(withDefaults())
+            .csrf().disable()
             .authorizeHttpRequests()
             .requestMatchers("/api/auth/**")
                 .permitAll()
@@ -52,7 +55,6 @@ public class SecurityConfig {
                 .logoutSuccessHandler((request, response, authentication) -> {
                     SecurityContextHolder.clearContext();
             });
-
 
         return http.build();
     }

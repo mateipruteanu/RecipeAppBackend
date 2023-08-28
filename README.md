@@ -12,7 +12,6 @@
 
 
 ### What the app will do:
-- 
 - :green_circle: Users will be able to add their own recipes (with ingredients & instructions, later photos)
 - :yellow_circle: They will be able to search through all recipes (including ones from other users) and save them for later
 - :large_blue_circle: The app will be able to recommend new recipes based on their preferences (with similar ingredients)

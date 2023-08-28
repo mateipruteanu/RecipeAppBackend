@@ -1,4 +1,4 @@
-# Restful API backend for a Recipe app.
+# Restful API backend for [RecipeAppFronend](https://github.com/mateipruteanu/recipeappfrontend#readme).
 
 * Built in **Java** with **Maven** and the **Spring Framework** using a MVC architecture.
 * Using **Spring Data JPA** for persisting data into a **MySQL** database.

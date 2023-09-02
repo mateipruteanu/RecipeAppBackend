@@ -47,7 +47,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             System.out.println("JwtAuthenticationFilter: UserDetails = " + userDetails.getAuthorities());
             boolean isTokenValidInDatabase = tokenRepository.findByToken(jwt)
                     .map(token -> !token.isExpired() && !token.isRevoked()).orElse(false);
+            System.out.println("findbytoken" +tokenRepository.findByToken(jwt));
+            System.out.println("isExpired" +tokenRepository.findByToken(jwt).map(token -> !token.isExpired()));
+            System.out.println("isRevoked" +tokenRepository.findByToken(jwt).map(token -> !token.isRevoked()));
+
             if(jwtService.isTokenValid(jwt, userDetails) && isTokenValidInDatabase) {
+                System.out.println("JwtAuthenticationFilter: Token is valid");
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
@@ -55,6 +60,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 ); // creating an authentication token
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken); // setting authentication token in security context
+                System.out.println("JwtAuthenticationFilter: Authentication token set in security context");
+                System.out.println("JwtAuthenticationFilter: Success JWT:" + jwt+":");
+            }
+            else {
+                System.out.println("JwtAuthenticationFilter: Token is invalid");
+                System.out.println("JwtAuthenticationFilter: isTokenValidInDB: " + isTokenValidInDatabase);
+                System.out.println("JwtAuthenticationFilter: isTokenValid: " + jwtService.isTokenValid(jwt, userDetails));
+                System.out.println("JwtAuthenticationFilter: JWT:"+ jwt+":");
             }
         }
         filterChain.doFilter(request, response); // passing the request and response to the next filter

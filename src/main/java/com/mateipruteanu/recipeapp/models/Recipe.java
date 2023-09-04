@@ -1,6 +1,7 @@
 package com.mateipruteanu.recipeapp.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,6 +22,10 @@ public class Recipe {
     private long id;
     @Column
     private String name;
+
+    @Column
+    private String addedBy;
+
     @Column
     private String description;
     @Column
@@ -29,6 +34,7 @@ public class Recipe {
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("recipe")
     private List<RecipeIngredient> recipeIngredients = new ArrayList<>();
+
 
     public Recipe() {
         name = "";

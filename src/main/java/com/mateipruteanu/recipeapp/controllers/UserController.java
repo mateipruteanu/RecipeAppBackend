@@ -147,7 +147,7 @@ public class UserController {
                 recipeIngredient.setIngredient(ingredient);
                 recipeIngredient.setRecipe(recipe);
             }
-
+            recipe.setAddedBy(user.getUsername());
             recipeRepository.save(recipe);
             user.getAddedRecipes().add(recipe);
             userRepository.save(user);
